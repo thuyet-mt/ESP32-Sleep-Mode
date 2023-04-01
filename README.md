@@ -2,38 +2,25 @@
 ## Sleep mode là gì?
 Trên thực tế, tất cả các dòng vi điều khiển đều có chế độ ngủ (sleep mode) nhưng hiệu suất của mỗi dòng sẽ khác nhau. Với các ứng dụng sử dụng trực tiếp điện từ lưới quốc gia, không cần quan tâm đến vấn đề năng lượng. Tuy nhiên, các thiết bị IOT dạng wearable rất phổ biến và cần sử dụng pin để đảm bảo tính linh hoạt. Sleep Mode ra đời để giúp MCU tiết kiệm năng lượng bằng cách tắt các phần chưa cần thiết và đặt các sự kiện có thể đánh thức (Wake Up) MCU dậy.
 ## Các chế độ tiết kiệm năng lượng của ESP32 Sleep Mode
-    Trong ESP32 có 5 chế độ năng lượng đó là:
+Trong ESP32 có 5 chế độ năng lượng đó là:
 - Active mode
 - Modem Sleep mode
 - Light Sleep mode
 - Deep Sleep mode
 - Hibernation mode
 ### ESP32 Active Mode
-     Trong chế độ này, tất cả các  khối chức năng của chip đều được bật, và đây là chế độ bình thường khi chạy các chương trình
+Trong chế độ này, tất cả các  khối chức năng của chip đều được bật, và đây là chế độ bình thường khi chạy các chương trình
 Vì Active Mode (hay còn gọi là Full Power Mode) bật mọi chức năng (đặc biệt là module WiFi, Bluetooth và nhân xử lý ), nên chip yêu cầu dòng điện hơn 240mA để hoạt động. Ngoài ra, nếu bạn sử dụng cả hai chức năng WiFi và Bluetooth cùng lúc thì năng lượng tiêu thụ sẽ lớn hơn rất nhiều (lớn nhất là 790mA).
 Lưu ý: Vì thế nên khi sử dụng các KIT esp32 chúng ta cần cấp nguồn ngoài cho KIT nếu không wifi hoặc BT/BLE sẽ không hoạt động nếu phải điều khiển thêm nhiều các phần tử khác trong mạch
 ### ESP32 Modem Sleep
-     Trong Modem Sleep, mọi thứ đều hoạt động, chỉ có WiFi, Bluetooth và Radio bị tắt. Để duy trì sự hoạt động của Wifi và BT/BLE, chúng phải được đánh thức định kì theo một thời gian mà lập trình viên mong muốn.
-     Chế độ này chỉ hoạt động trong chế độ máy trạm (Wifi Station), không được sử dụng trong chế độ điểm truy cập (Access Point). Khi ở chế độ này ESP32 vẫn kết nối với bộ định tuyến thông qua cơ chế DTIM Beacon.
-Để tiết kiệm năng lượng, ESP32 vô hiệu hóa module Wi-Fi giữa hai khoảng thời gian DTIM Beacon và tự động thức dậy trước khi đến Beacon tiếp theo. Thời gian wake up có thể từ 100 – 1000ms.
+Trong Modem Sleep, mọi thứ đều hoạt động, chỉ có WiFi, Bluetooth và Radio bị tắt. Để duy trì sự hoạt động của Wifi và BT/BLE, chúng phải được đánh thức định kì theo một thời gian mà lập trình viên mong muốn. Chế độ này chỉ hoạt động trong chế độ máy trạm (Wifi Station), không được sử dụng trong chế độ điểm truy cập (Access Point). Khi ở chế độ này ESP32 vẫn kết nối với bộ định tuyến thông qua cơ chế DTIM Beacon. Để tiết kiệm năng lượng, ESP32 vô hiệu hóa module Wi-Fi giữa hai khoảng thời gian DTIM Beacon và tự động thức dậy trước khi đến Beacon tiếp theo. Thời gian wake up có thể từ 100 – 1000ms.
 Với chế độ này ESP32 tiêu thụ từ: 3mA – 20mA
 ### ESP32 Light Sleep
-     Với chế độ này ESP32 tắt các thành phần phát sóng như wifi, BT/BLE như chế độ modem sleep, cùng với tăt nguồn xung đồng hồ (Clock) của CPU và RAM và ngoại vi. Nhưng RTC và ULP – coprocessor vẫn hoạt động bình thường.
-     Kĩ thuật này được gọi là clock-gating.
-     Clock gating là một kỹ thuật để giảm tiêu thụ năng lượng. Nó vô hiệu hóa các phần của mạch điện bằng cách tắt các xung clock, để các flip-flop trong chúng không phải chuyển trạng thái. Vì khi có chuyển đổi trạng thái thì năng lượng bị tiêu thụ, ngược lại, mức tiêu thụ năng lượng bằng 0.
-     Trong chế độ này ESP32 tiêu thụ khoảng 0.8mA
+Với chế độ này ESP32 tắt các thành phần phát sóng như wifi, BT/BLE như chế độ modem sleep, cùng với tăt nguồn xung đồng hồ (Clock) của CPU và RAM và ngoại vi. Nhưng RTC và ULP – coprocessor vẫn hoạt động bình thường. Kĩ thuật này được gọi là clock-gating. Clock gating là một kỹ thuật để giảm tiêu thụ năng lượng. Nó vô hiệu hóa các phần của mạch điện bằng cách tắt các xung clock, để các flip-flop trong chúng không phải chuyển trạng thái. Vì khi có chuyển đổi trạng thái thì năng lượng bị tiêu thụ, ngược lại, mức tiêu thụ năng lượng bằng 0. Trong chế độ này ESP32 tiêu thụ khoảng 0.8mA
 ### ESP32 Deep Sleep
-     Ở chế độ Deep Sleep, CPU, RAM và tất cả các ngoại vi đều bị tắt. Các bộ phận duy nhất của chip vẫn được cấp nguồn là: bộ RTC, ngoại vi RTC (bao gồm bộ ULP) và bộ nhớ RTC.
-     CPU chính bị tắt nguồn còn bộ ULP thực hiện các phép đo cảm biến và đánh thức hệ thống chính dựa trên dữ liệu đo được.
-     Cùng với CPU, bộ nhớ chính của chip cũng bị tắt. Vì vậy, mọi thứ được lưu trữ trong bộ nhớ đó bị xóa sạch và không thể truy cập được.
-     Tuy nhiên, bộ nhớ RTC vẫn được bật. Vì vậy, nội dung của nó được bảo quản trong Deep Sleep và có thể được lấy ra sau khi chip được đánh thức. Đó là lý do mà chip lưu trữ dữ liệu kết nối Wi-Fi và Bluetooth trong bộ nhớ RTC trước đó.
-     Khi Wake up khỏi Deep Sleep, ESP32 sẽ hoạt động lại từ đầu, tương tự như việc reset vậy.
-     Trong chế độ này ESP32 tiêu thụ từ 10µA đến 0.15mA 
+Ở chế độ Deep Sleep, CPU, RAM và tất cả các ngoại vi đều bị tắt. Các bộ phận duy nhất của chip vẫn được cấp nguồn là: bộ RTC, ngoại vi RTC (bao gồm bộ ULP) và bộ nhớ RTC. CPU chính bị tắt nguồn còn bộ ULP thực hiện các phép đo cảm biến và đánh thức hệ thống chính dựa trên dữ liệu đo được. Cùng với CPU, bộ nhớ chính của chip cũng bị tắt. Vì vậy, mọi thứ được lưu trữ trong bộ nhớ đó bị xóa sạch và không thể truy cập được. Tuy nhiên, bộ nhớ RTC vẫn được bật. Vì vậy, nội dung của nó được bảo quản trong Deep Sleep và có thể được lấy ra sau khi chip được đánh thức. Đó là lý do mà chip lưu trữ dữ liệu kết nối Wi-Fi và Bluetooth trong bộ nhớ RTC trước đó. Khi Wake up khỏi Deep Sleep, ESP32 sẽ hoạt động lại từ đầu, tương tự như việc reset vậy. Trong chế độ này ESP32 tiêu thụ từ 10µA đến 0.15mA 
 ### ESP32 Hibernation
-     Trong chế độ Hibernation Mode, chip vô hiệu hóa bộ tạo dao động 8MHz bên trong và bộ ULP. Bộ nhớ phục hồi RTC cũng bị tắt nguồn, có nghĩa là không có cách nào chúng ta có thể lưu trữ dữ liệu trong chế độ ngủ đông.
-     Mọi thứ khác đều bị tắt ngoại trừ bộ đếm thời gian RTC slow clock và một số GPIO RTC đang hoạt động. Chúng có trách nhiệm đánh thức chip ra khỏi Hibernation Mode.
-     Vậy nên hãy lưu ý khi sử dụng chế độ này nhé.
-     Trong chế độ Hibernation Mode, chip chỉ tiêu thụ khoảng 2.5µA.
+Trong chế độ Hibernation Mode, chip vô hiệu hóa bộ tạo dao động 8MHz bên trong và bộ ULP. Bộ nhớ phục hồi RTC cũng bị tắt nguồn, có nghĩa là không có cách nào chúng ta có thể lưu trữ dữ liệu trong chế độ ngủ đông. Mọi thứ khác đều bị tắt ngoại trừ bộ đếm thời gian RTC slow clock và một số GPIO RTC đang hoạt động. Chúng có trách nhiệm đánh thức chip ra khỏi Hibernation Mode. Vậy nên hãy lưu ý khi sử dụng chế độ này nhé. Trong chế độ Hibernation Mode, chip chỉ tiêu thụ khoảng 2.5µA.
  
 Hình 1.1 Trạng thái của các ngoại vi ở Sleep Mode ESP32
  
