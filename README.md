@@ -39,7 +39,7 @@ Ví dụ: Muốn ESP32 ở trong chế độ sleep trong 5 giây, ta sẽ gán t
 Tiếp theo, để ESP32 bước vào chế độ light sleep, chúng ta gọi hàm esp_light_sleep_start();
 Trước khi ESP32 bước vào chế độ light sleep, chúng ta sẽ gọi hàm print để đưa ra một tin nhắn thông báo 
 Ngoài ra, để kiểm chứng thời gian ESP32 ở trong chế độ Light Sleep, chúng ta sẽ gọi hàm esp_timer_get_time để tiến hành đo thời gian tại lúc bắt đầu và kết thúc thời gian ESP32 ở trong chế độ Light Sleep. Bảng 2-1 là chi tiết phần code tham khảo chương trình ứng dụng 
-
+```
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -59,6 +59,7 @@ void app_main()
     int64_t after = esp_timer_get_time();
     printf("napped for %lld\n", (after - before) / 1000);
 }
+```
 
 Bảng 2 1 Code ứng dụng Timer trong Light Sleep
 Hình 2.3 là kết quả thực hiện chương trình, ESP32 sẽ kích hoạt timer làm nguồn wake up sau đó gửi một tin nhắn thông báo trước khi bước vào chế độ Light  Sleep. Sau đó sử dụng esp_timer_get_time để tính toán thời gian ở trong chế độ Light Sleep. Cụ thể, nhóm đã cài đặt thời gian để ESP32 bước vào chế độ Light Sleep trong 5 giây.
