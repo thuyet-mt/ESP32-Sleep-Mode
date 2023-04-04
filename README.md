@@ -39,6 +39,7 @@ Ví dụ: Muốn ESP32 ở trong chế độ sleep trong 5 giây, ta sẽ gán t
 Tiếp theo, để ESP32 bước vào chế độ light sleep, chúng ta gọi hàm esp_light_sleep_start();
 Trước khi ESP32 bước vào chế độ light sleep, chúng ta sẽ gọi hàm print để đưa ra một tin nhắn thông báo 
 Ngoài ra, để kiểm chứng thời gian ESP32 ở trong chế độ Light Sleep, chúng ta sẽ gọi hàm esp_timer_get_time để tiến hành đo thời gian tại lúc bắt đầu và kết thúc thời gian ESP32 ở trong chế độ Light Sleep. Bảng 2-1 là chi tiết phần code tham khảo chương trình ứng dụng 
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -58,6 +59,7 @@ void app_main()
     int64_t after = esp_timer_get_time();
     printf("napped for %lld\n", (after - before) / 1000);
 }
+
 Bảng 2 1 Code ứng dụng Timer trong Light Sleep
 Hình 2.3 là kết quả thực hiện chương trình, ESP32 sẽ kích hoạt timer làm nguồn wake up sau đó gửi một tin nhắn thông báo trước khi bước vào chế độ Light  Sleep. Sau đó sử dụng esp_timer_get_time để tính toán thời gian ở trong chế độ Light Sleep. Cụ thể, nhóm đã cài đặt thời gian để ESP32 bước vào chế độ Light Sleep trong 5 giây.
  
@@ -68,6 +70,7 @@ Sự khác biệt giữa Light Sleep và Deep Sleep ở phần wake up đó là 
 Để ESP32 bước vào chế độ light sleep, chúng ta gọi hàm esp_deep_sleep_start()
 Ngoài ra, Với ESP32, ta có thể lưu dữ liệu trên bộ nhớ RTC. ESP32 có 8kB SRAM trên phần RTC, được gọi là RTC fast memory. Dữ liệu được lưu ở đây không bị xóa khi ESP vào chế độ Deep Sleep. Tuy nhiên, nó sẽ bị xóa khi nhấn nút Reset (nút có nhãn EN trên bo mạch ESP32).
 Để lưu dữ liệu trên bộ nhớ RTC, ta chỉ cần thêm RTC_DATA_ATTR trước khi định nghĩa biến, và biến này phải ở trạng thái global. Ví dụ lưu biến timesWokenUp trên bộ nhớ RTC. Biến này sẽ đếm số lần ESP32 đã thức dậy sau khi Deep Sleep. Bảng 2-2 là chi tiết phần code tham khảo chương trình ứng dụng 
+```
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -81,6 +84,7 @@ void app_main(void)
 
   esp_deep_sleep_start();
 }
+```
 Bảng 2 2 Code ứng dụng Timer trong Deep Sleep
 Hình 2.4 là kết quả thực hiện chương trình. ESP32 sẽ kích hoạt timer làm nguồn wake up sau đó đưa ra một dòng thông báo ESP32 bước vào chế độ deep sleep và số lần được đánh thức 
  
@@ -128,6 +132,7 @@ level: là mức logic của chân GPIO ta chọn
 Sau khi đánh thức từ chế độ ngủ, chân RTC IO được dùng để đánh thức sẽ được cấu hình lại chân GPIO thông thường bằng cách sử dụng hàm rtc_gpio_deinit(gpio_num) .
 a) a) Ứng dụng ext0 trong Deep Sleep
 Đầu tiên chúng ta sử dụng một nút nhấn, kết nối nút nhấn này với một chân GPIO trên esp32 để làm một external interrupt. Khi nhấn nút, mức logic thay đổi, điều này sẽ kích hoạt đánh thức esp32 khỏi chế độ sleep. Để sử dụng được chân GPIO trong chế độ Deep Sleep, chúng ta cần sử dụng header file "driver/rtc_io.h". Header file này chứa các hàm chức năng cho phép ta sử dụng và cấu hình hoạt động của các chân GPIO trong chế độ Deep Sleep. Trong ví dụ này, nhóm em sẽ sử dụng chân GPIO 0. Vì ở trạng thái thông thường, các chân GPIO của Esp32 luôn ở trạng thái trở kháng cao (High-impedance) hoặc thả nổi (Floating) rất khó để xác định mức logic để đưa vào tham số trong hàm esp_sleep_enable_ext0_wakeup.  Vì thế, chân GPIO này sẽ được cấu hình pull-up để trạng thái của chân GPIO 0 luôn ở mức logic 1. Hàm esp_sleep_enable_ext0_wakeup được dùng để chọn external interrupt 0 làm nguồn đánh thức ESP32. Sau đó ESP32 được đưa vào chế độ Deep Sleep bằng hàm esp_deep_sleep_start(). Bảng 2-3 là chi tiết phần code tham khảo chương trình ứng dụng 
+```
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -148,6 +153,7 @@ void app_main(void)
   printf("going to sleep. woken up %d\n", timesWokenUp++);
   esp_deep_sleep_start();
 }
+```
 Bảng 2 3 Code ứng dụng EXT0 trong Deep Sleep
 Hình 2-5 là kết quả khi chạy chương trình ứng dụng. ESP32 sẽ được đánh thức mỗi khi ta nhấn nút tương ứng với chân GPIO 0 nằm trên board mạch.
  
@@ -174,6 +180,7 @@ Trường hợp 2: Nếu sử dụng chế độ  ESP_EXT1_WAKEUP_ANY_HIGH thì 
 Ngoài ra, chúng ta sẽ phải bật ngoại vi RTC để có thể sử dụng các chân RTC GPIO bằng lệnh esp_sleep_pd_config. Tiếp theo, ta sẽ tạo biến mask để đưa vào làm tham số của hàm esp_sleep_enable_ext1_wakeup.
 uint64_t mask = (1ULL << BUTTON_1) | (1ULL << BUTTON_2);
 Giá trị của biến mask sẽ là 1ULL (Unsigned Long Long) nếu cả BUTTON_1 và BUTTON_2 đều bằng 0. Bảng 2-4 là chi tiết chương trình ứng dụng EXT1 với Deep Sleep.
+```
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -202,6 +209,7 @@ void app_main(void)
 
   esp_deep_sleep_start();
 }
+```
 Bảng 2 4 Chương trình ứng dụng EXT1 với Deep Sleep
 1.3.3.5 ULP Coprocessor Wakeup
 ESP32 cũng được tích hợp bộ xử lý công suất thấp được gọi là ULP coProcessor (Ultra-Low Power). Điểm đặc biệt của bộ xử lý này là nó có thể chạy độc lập với bộ xử lý lõi chính và nó cũng có quyền truy cập vào một số thiết bị ngoại vi. ULP có thể được sử dụng để kiểm tra các cảm biến, giám sát giá trị ADC hoặc cảm biến cảm ứng và đánh thức MCU khi phát hiện một sự kiện cụ thể. ULP cocoprocessor  là một phần của ngoại vi RTC, và nó thực hiện chương trình được lưu trong bộ nhớ RTC slow memory. RTC slow memory được cấp nguồn trong quá trình ESP32 bước vào chế độ sleep nếu được yêu. Ngoại vi RTC tự động được cấp nguồn trước khi ULP coProcessor bắt đầu chạy chương; Khi dừng chạy, ngoại vi RTC được tự động ngắt nguồn.
@@ -218,6 +226,7 @@ Bảng 2-5 là chi tiết phần code ứng dụng. đầu tiên chúng ta cấu
 Sau đó, trong vòng lặp vô hạn, ta kiểm tra trạng thái INPUT_PIN. Nếu nó đang ở mức thấp, chúng ta in ra thông báo yêu cầu người dùng thả nút và đợi đến khi nó được thả ra (thông qua hàm vTaskDelay để delay trong một thời gian nhất định và hàm rtc_gpio_get_level để kiểm tra trạng thái của INPUT_PIN).
 Nếu ngõ vào INPUT_PIN đang ở trạng thái cao, chúng ta in ra thông báo và đợi một khoảng thời gian ngắn để UART hoạt động cho đến khi gửi xong tất cả các dữ liệu, sau đó chúng ta bắt đầu chế độ sleep nhẹ bằng cách sử dụng hàm esp_light_sleep_start. 
 Sau khi kết thúc thời gian sleep, chúng ta sử dụng hàm esp_sleep_get_wakeup_cause để kiểm tra nguyên nhân của wakeup và in ra thông tin về thời gian nghỉ và nguyên nhân của wakeup.
+```
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -268,6 +277,7 @@ void app_main()
                reason == ESP_SLEEP_WAKEUP_TIMER ? "timer" : "button");
     }
 }
+```
 Bảng 2 5 Ứng dụng GPIO trong Light Sleep
 1.3.3.7 UART wakeup (chỉ dành cho light sleep) 
 Khi ESP32 nhận được đầu vào UART từ các thiết bị bên ngoài, thường cần đánh thức chip khi dữ liệu đầu vào có sẵn. Bộ vi xử lý UART chứa một tính năng cho phép đánh thức chip từ chế độ ngủ nhẹ khi có một số lượng cạnh dương trên chân RX được nhìn thấy. Số lượng cạnh dương này có thể được thiết lập bằng cách sử dụng hàm uart_set_wakeup_threshold().
