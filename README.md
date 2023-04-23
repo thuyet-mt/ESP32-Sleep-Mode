@@ -121,7 +121,7 @@ gpio_num: là tên của chân GPIO ta chọn làm nguồn cho ext0
 level: là mức logic của chân GPIO ta chọn  
 Sau khi đánh thức từ chế độ ngủ, chân RTC IO được dùng để đánh thức sẽ được cấu hình lại chân GPIO thông thường bằng cách sử dụng hàm rtc_gpio_deinit(gpio_num).
 #### Ứng dụng ext0 trong Deep Sleep
-Đầu tiên chúng ta sử dụng một nút nhấn, kết nối nút nhấn này với một chân GPIO trên esp32 để làm một external interrupt. Khi nhấn nút, mức logic thay đổi, điều này sẽ kích hoạt đánh thức esp32 khỏi chế độ sleep. Để sử dụng được chân GPIO trong chế độ Deep Sleep, chúng ta cần sử dụng header file "driver/rtc_io.h". Header file này chứa các hàm chức năng cho phép ta sử dụng và cấu hình hoạt động của các chân GPIO trong chế độ Deep Sleep. Trong ví dụ này, nhóm em sẽ sử dụng chân GPIO 0. Vì ở trạng thái thông thường, các chân GPIO của Esp32 luôn ở trạng thái trở kháng cao (High-impedance) hoặc thả nổi (Floating) rất khó để xác định mức logic để đưa vào tham số trong hàm esp_sleep_enable_ext0_wakeup.  Vì thế, chân GPIO này sẽ được cấu hình pull-up để trạng thái của chân GPIO 0 luôn ở mức logic 1. Hàm esp_sleep_enable_ext0_wakeup được dùng để chọn external interrupt 0 làm nguồn đánh thức ESP32. Sau đó ESP32 được đưa vào chế độ Deep Sleep bằng hàm esp_deep_sleep_start(). Bên dướilà chi tiết phần code tham khảo chương trình ứng dụng 
+Đầu tiên chúng ta sử dụng một nút nhấn, kết nối nút nhấn này với một chân GPIO trên esp32 để làm một external interrupt. Khi nhấn nút, mức logic thay đổi, điều này sẽ kích hoạt đánh thức esp32 khỏi chế độ sleep. Để sử dụng được chân GPIO trong chế độ Deep Sleep, chúng ta cần sử dụng header file "driver/rtc_io.h". Header file này chứa các hàm chức năng cho phép ta sử dụng và cấu hình hoạt động của các chân GPIO trong chế độ Deep Sleep. Trong ví dụ này, nhóm em sẽ sử dụng chân GPIO 0. Vì ở trạng thái thông thường, các chân GPIO của Esp32 luôn ở trạng thái trở kháng cao (High-impedance) hoặc thả nổi (Floating) rất khó để xác định mức logic để đưa vào tham số trong hàm esp_sleep_enable_ext0_wakeup.  Vì thế, chân GPIO này sẽ được cấu hình pull-up để trạng thái của chân GPIO 0 luôn ở mức logic 1. Hàm esp_sleep_enable_ext0_wakeup được dùng để chọn external interrupt 0 làm nguồn đánh thức ESP32. Sau đó ESP32 được đưa vào chế độ Deep Sleep bằng hàm esp_deep_sleep_start(). Bên dưới là chi tiết phần code tham khảo chương trình ứng dụng 
 ```
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
@@ -144,14 +144,11 @@ void app_main(void)
   esp_deep_sleep_start();
 }
 ```
-Bảng 2 3 Code ứng dụng EXT0 trong Deep Sleep
-Hình 2-5 là kết quả khi chạy chương trình ứng dụng. ESP32 sẽ được đánh thức mỗi khi ta nhấn nút tương ứng với chân GPIO 0 nằm trên board mạch.
- 
-Hình 2.5 Kết quả chương trình ứng dụng EXT0 trong Deep Sleep
+Khi chạy chương trình ứng dụng. ESP32 sẽ được đánh thức mỗi khi ta nhấn nút tương ứng với chân GPIO 0 nằm trên board mạch.
 ### External Wakeup (ext1) 
 Như đã đề cập trước đó, ext1 được sử dụng khi nhiều chân GPIO RTC được sử dụng để hoạt động như nguồn đánh thức bên ngoài. Để kích hoạt nguồn báo thức ext1, chúng ta sử dụng API sau: esp_sleep_enable_ext1_wakeup
 Nguyên mẫu của hàm như sau:
-esp_err_t esp_sleep_enable_ext1_wakeup(uint64_t gpio_pin_mask, 									esp_sleep_ext1_wakeup_mode_t mode);
+esp_err_t esp_sleep_enable_ext1_wakeup(uint64_t gpio_pin_mask, esp_sleep_ext1_wakeup_mode_t mode);
 Trong đó:
 gpio_pin_mask:  Mặt nạ bit của số GPIO sẽ đánh thức. Chỉ những chân GPIO có chức năng RTC có thể được sử dụng.
 mode: chọn chức năng logic được sử dụng để xác định điều kiện đánh thức:
@@ -169,7 +166,7 @@ Trường hợp 1: Nếu sử dụng chế độ  ESP_EXT1_WAKEUP_ALL_LOW thì t
 Trường hợp 2: Nếu sử dụng chế độ  ESP_EXT1_WAKEUP_ANY_HIGH thì ta sẽ cấu hình tất cả các chân RTC GPIO ở dạng pulldown, để các chân GPIO có mức logic ban đầu là 0, khi nhấn nút thì mức logic sẽ là 1 để đúng với điều kiện của ESP_EXT1_WAKEUP_ANY_HIGH.
 Ngoài ra, chúng ta sẽ phải bật ngoại vi RTC để có thể sử dụng các chân RTC GPIO bằng lệnh esp_sleep_pd_config. Tiếp theo, ta sẽ tạo biến mask để đưa vào làm tham số của hàm esp_sleep_enable_ext1_wakeup.
 uint64_t mask = (1ULL << BUTTON_1) | (1ULL << BUTTON_2);
-Giá trị của biến mask sẽ là 1ULL (Unsigned Long Long) nếu cả BUTTON_1 và BUTTON_2 đều bằng 0. Bảng 2-4 là chi tiết chương trình ứng dụng EXT1 với Deep Sleep.
+Giá trị của biến mask sẽ là 1ULL (Unsigned Long Long) nếu cả BUTTON_1 và BUTTON_2 đều bằng 0. Bên dưới là chi tiết chương trình ứng dụng EXT1 với Deep Sleep.
 ```
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
@@ -200,7 +197,7 @@ void app_main(void)
   esp_deep_sleep_start();
 }
 ```
-Bảng 2 4 Chương trình ứng dụng EXT1 với Deep Sleep
+
 ### ULP Coprocessor Wakeup
 ESP32 cũng được tích hợp bộ xử lý công suất thấp được gọi là ULP coProcessor (Ultra-Low Power). Điểm đặc biệt của bộ xử lý này là nó có thể chạy độc lập với bộ xử lý lõi chính và nó cũng có quyền truy cập vào một số thiết bị ngoại vi. ULP có thể được sử dụng để kiểm tra các cảm biến, giám sát giá trị ADC hoặc cảm biến cảm ứng và đánh thức MCU khi phát hiện một sự kiện cụ thể. ULP cocoprocessor  là một phần của ngoại vi RTC, và nó thực hiện chương trình được lưu trong bộ nhớ RTC slow memory. RTC slow memory được cấp nguồn trong quá trình ESP32 bước vào chế độ sleep nếu được yêu. Ngoại vi RTC tự động được cấp nguồn trước khi ULP coProcessor bắt đầu chạy chương; Khi dừng chạy, ngoại vi RTC được tự động ngắt nguồn.
 Hàm esp_sleep_enable_ulp_wakeup() được sử dụng để kích hoạt nguồn đánh thức là ULP coProcessor.
@@ -268,7 +265,6 @@ void app_main()
     }
 }
 ```
-Bảng 2 5 Ứng dụng GPIO trong Light Sleep
 ### UART wakeup (chỉ dành cho light sleep) 
 Khi ESP32 nhận được đầu vào UART từ các thiết bị bên ngoài, thường cần đánh thức chip khi dữ liệu đầu vào có sẵn. Bộ vi xử lý UART chứa một tính năng cho phép đánh thức chip từ chế độ ngủ nhẹ khi có một số lượng cạnh dương trên chân RX được nhìn thấy. Số lượng cạnh dương này có thể được thiết lập bằng cách sử dụng hàm uart_set_wakeup_threshold().
 Lưu ý rằng ký tự kích hoạt đánh thức (và bất kỳ ký tự nào trước đó) sẽ không được nhận bởi UART sau khi đánh thức. Điều này có nghĩa là thiết bị bên ngoài thường cần gửi một ký tự bổ sung đến ESP32 để kích hoạt đánh thức trước khi gửi dữ liệu. Hàm esp_sleep_enable_uart_wakeup()có thể được sử dụng để kích hoạt nguồn đánh thức này.
