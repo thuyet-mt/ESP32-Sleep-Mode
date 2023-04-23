@@ -116,8 +116,7 @@ Trong các phiên bản 0 và 1 của ESP32, nguồn đánh thức này không t
 Hàm esp_sleep_enable_ext0_wakeup()có thể được sử dụng để kích hoạt nguồn đánh thức này. 
 Nguyên mẫu của hàm như sau:
 esp_err_t esp_sleep_enable_ext0_wakeup(gpio_num_t gpio_num, int level);
-Trong đó:
-gpio_num: là tên của chân GPIO ta chọn làm nguồn cho ext0  
+Trong đó:                                                                                                                                                           gpio_num: là tên của chân GPIO ta chọn làm nguồn cho ext0  
 level: là mức logic của chân GPIO ta chọn  
 Sau khi đánh thức từ chế độ ngủ, chân RTC IO được dùng để đánh thức sẽ được cấu hình lại chân GPIO thông thường bằng cách sử dụng hàm rtc_gpio_deinit(gpio_num).
 #### Ứng dụng ext0 trong Deep Sleep
