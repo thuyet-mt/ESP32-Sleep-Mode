@@ -21,10 +21,7 @@ Với chế độ này ESP32 tắt các thành phần phát sóng như wifi, BT/
 Ở chế độ Deep Sleep, CPU, RAM và tất cả các ngoại vi đều bị tắt. Các bộ phận duy nhất của chip vẫn được cấp nguồn là: bộ RTC, ngoại vi RTC (bao gồm bộ ULP) và bộ nhớ RTC. CPU chính bị tắt nguồn còn bộ ULP thực hiện các phép đo cảm biến và đánh thức hệ thống chính dựa trên dữ liệu đo được. Cùng với CPU, bộ nhớ chính của chip cũng bị tắt. Vì vậy, mọi thứ được lưu trữ trong bộ nhớ đó bị xóa sạch và không thể truy cập được. Tuy nhiên, bộ nhớ RTC vẫn được bật. Vì vậy, nội dung của nó được bảo quản trong Deep Sleep và có thể được lấy ra sau khi chip được đánh thức. Đó là lý do mà chip lưu trữ dữ liệu kết nối Wi-Fi và Bluetooth trong bộ nhớ RTC trước đó. Khi Wake up khỏi Deep Sleep, ESP32 sẽ hoạt động lại từ đầu, tương tự như việc reset vậy. Trong chế độ này ESP32 tiêu thụ từ 10µA đến 0.15mA 
 ### ESP32 Hibernation
 Trong chế độ Hibernation Mode, chip vô hiệu hóa bộ tạo dao động 8MHz bên trong và bộ ULP. Bộ nhớ phục hồi RTC cũng bị tắt nguồn, có nghĩa là không có cách nào chúng ta có thể lưu trữ dữ liệu trong chế độ ngủ đông. Mọi thứ khác đều bị tắt ngoại trừ bộ đếm thời gian RTC slow clock và một số GPIO RTC đang hoạt động. Chúng có trách nhiệm đánh thức chip ra khỏi Hibernation Mode. Vậy nên hãy lưu ý khi sử dụng chế độ này nhé. Trong chế độ Hibernation Mode, chip chỉ tiêu thụ khoảng 2.5µA.
- 
-Hình 1.1 Trạng thái của các ngoại vi ở Sleep Mode ESP32
- 
-Hình 1.2 Điện năng tiêu thụ của các chế độ ESP32
+
 ## Các nguồn dùng để đánh thức ESP32 khỏi chế độ Sleep
 ### Timer Wakeup
 Bộ RTC có một timer tích hợp có thể được sử dụng để đánh thức chip sau một khoảng thời gian đã được xác định trước. Thời gian được chỉ định với độ chính xác micro giây, nhưng độ phân giải thực tế phụ thuộc vào nguồn xung đã chọn cho RTC SLOW_CLK. 
