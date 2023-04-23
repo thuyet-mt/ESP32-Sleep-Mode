@@ -35,7 +35,7 @@ time_in_us: tham số này dùng để chỉ thời gian ta muốn ESP32 ở tr�
 Ví dụ: Muốn ESP32 ở trong chế độ sleep trong 5 giây, ta sẽ gán tham số time_in_us = 5000000
 Tiếp theo, để ESP32 bước vào chế độ light sleep, chúng ta gọi hàm esp_light_sleep_start();
 Trước khi ESP32 bước vào chế độ light sleep, chúng ta sẽ gọi hàm print để đưa ra một tin nhắn thông báo 
-Ngoài ra, để kiểm chứng thời gian ESP32 ở trong chế độ Light Sleep, chúng ta sẽ gọi hàm esp_timer_get_time để tiến hành đo thời gian tại lúc bắt đầu và kết thúc thời gian ESP32 ở trong chế độ Light Sleep. Bảng 2-1 là chi tiết phần code tham khảo chương trình ứng dụng 
+Ngoài ra, để kiểm chứng thời gian ESP32 ở trong chế độ Light Sleep, chúng ta sẽ gọi hàm esp_timer_get_time để tiến hành đo thời gian tại lúc bắt đầu và kết thúc thời gian ESP32 ở trong chế độ Light Sleep. Bên dưới là chi tiết phần code tham khảo chương trình ứng dụng 
 ```
 #include <stdio.h>
 #include <string.h>
@@ -57,17 +57,13 @@ void app_main()
     printf("napped for %lld\n", (after - before) / 1000);
 }
 ```
-
-Bảng 2 1 Code ứng dụng Timer trong Light Sleep
-Hình 2.3 là kết quả thực hiện chương trình, ESP32 sẽ kích hoạt timer làm nguồn wake up sau đó gửi một tin nhắn thông báo trước khi bước vào chế độ Light  Sleep. Sau đó sử dụng esp_timer_get_time để tính toán thời gian ở trong chế độ Light Sleep. Cụ thể, nhóm đã cài đặt thời gian để ESP32 bước vào chế độ Light Sleep trong 5 giây.
- 
-Hình 2.3 Kết quả chương trình ứng dụng Timer trong Light Sleep
+Khi thực hiện chương trình, ESP32 sẽ kích hoạt timer làm nguồn wake up sau đó gửi một tin nhắn thông báo trước khi bước vào chế độ Light  Sleep. Sau đó sử dụng esp_timer_get_time để tính toán thời gian ở trong chế độ Light Sleep. Cụ thể, tôi đã cài đặt thời gian để ESP32 bước vào chế độ Light Sleep trong 5 giây.
 #### Ứng dụng Timer trong Deep Sleep
 Tương tự với Light Sleep, chúng ta cũng sẽ sử dụng hàm esp_sleep_enable_timer_wakeup để chọn Timer là nguồn đánh thức ESP32 khỏi chế độ Deep Sleep.
 Sự khác biệt giữa Light Sleep và Deep Sleep ở phần wake up đó là wake up ở Light sleep thì ESP32 sẽ tiếp tục những công việc đang dang dở trước đó, còn ở Deep sleep thì khi wake up, ESP32 sẽ khởi động lại (reset), các dữ liệu trước đó đều mất.
 Để ESP32 bước vào chế độ light sleep, chúng ta gọi hàm esp_deep_sleep_start()
 Ngoài ra, Với ESP32, ta có thể lưu dữ liệu trên bộ nhớ RTC. ESP32 có 8kB SRAM trên phần RTC, được gọi là RTC fast memory. Dữ liệu được lưu ở đây không bị xóa khi ESP vào chế độ Deep Sleep. Tuy nhiên, nó sẽ bị xóa khi nhấn nút Reset (nút có nhãn EN trên bo mạch ESP32).
-Để lưu dữ liệu trên bộ nhớ RTC, ta chỉ cần thêm RTC_DATA_ATTR trước khi định nghĩa biến, và biến này phải ở trạng thái global. Ví dụ lưu biến timesWokenUp trên bộ nhớ RTC. Biến này sẽ đếm số lần ESP32 đã thức dậy sau khi Deep Sleep. Bảng 2-2 là chi tiết phần code tham khảo chương trình ứng dụng 
+Để lưu dữ liệu trên bộ nhớ RTC, ta chỉ cần thêm RTC_DATA_ATTR trước khi định nghĩa biến, và biến này phải ở trạng thái global. Ví dụ lưu biến timesWokenUp trên bộ nhớ RTC. Biến này sẽ đếm số lần ESP32 đã thức dậy sau khi Deep Sleep. Bên dưới là chi tiết phần code tham khảo chương trình ứng dụng 
 ```
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
@@ -83,14 +79,9 @@ void app_main(void)
   esp_deep_sleep_start();
 }
 ```
-Bảng 2 2 Code ứng dụng Timer trong Deep Sleep
-Hình 2.4 là kết quả thực hiện chương trình. ESP32 sẽ kích hoạt timer làm nguồn wake up sau đó đưa ra một dòng thông báo ESP32 bước vào chế độ deep sleep và số lần được đánh thức 
- 
-Hình 2.4 Kết quả chương trình ứng dụng Timer trong Deep Sleep
-
+Khi thực hiện chương trình. ESP32 sẽ kích hoạt timer làm nguồn wake up sau đó đưa ra một dòng thông báo ESP32 bước vào chế độ deep sleep và số lần được đánh thức 
 ### Touch-pad Wakeup
-Touchpad wakeup hoặc touch wakeup là tùy chọn khác để đánh thức bo mạch ESP32 từ chế độ ngủ sâu. Việc đánh thức sẽ xảy ra khi người dùng chạm vào một trong các chân cảm ứng của bo mạch ESP32 gây ra một ngắt cảm ứng.
-Hàm esp_sleep_enable_touchpad_wakeup()được sử dụng để kích hoạt đánh thức từ chế độ ngủ sâu thông qua touchpad. 
+Touchpad wakeup hoặc touch wakeup là tùy chọn khác để đánh thức bo mạch ESP32 từ chế độ ngủ sâu. Việc đánh thức sẽ xảy ra khi người dùng chạm vào một trong các chân cảm ứng của bo mạch ESP32 gây ra một ngắt cảm ứng.  Hàm esp_sleep_enable_touchpad_wakeup()được sử dụng để kích hoạt đánh thức từ chế độ ngủ sâu thông qua touchpad. 
 ESP-WROOM-32 bao gồm 10 cảm biến touch trên bo mạch. Chúng hữu ích vì chúng hoạt động như các cảm biến cảm ứng có thể gây ra đánh thức ngắt touchpad khi chúng được chạm vào, phát hiện bất kỳ sóng điện/magnet xung quanh chúng. Các chân cảm biến cảm ứng được trang bị trên bo mạch ESP32:
 •	TOUCH0 – GPIO4
 •	TOUCH1 – GPIO0
@@ -106,11 +97,11 @@ ESP-WROOM-32 bao gồm 10 cảm biến touch trên bo mạch. Chúng hữu ích 
 ### External Wakeup (ext0) 
 Bên cạnh đó, các nguồn đánh thức bên ngoài cũng thường được sử dụng, trong đó sự thay đổi trạng thái của chân GPIO sẽ đánh thức bo mạch ESP32 từ chế độ Deep Sleep. Nguồn đánh thức được cấu hình trước khi đặt bo mạch ESP32 vào chế độ Deep Sleep. Có hai loại ngắt đánh thức bên ngoài mà chúng ta có thể thiết lập: ext0 và ext1. Trong ext0, một chân GPIO được cấu hình để hoạt động như một nguồn đánh thức bên ngoài. Tuy nhiên, nếu ta muốn sử dụng nhiều chân GPIO, thì ext1 sẽ được sử dụng. Một điểm quan trọng cần lưu ý, ta chỉ có thể sử dụng các chân GPIO RTC để đánh thức bên ngoài. ESP32 DevKit V1-DOIT có 14 chân GPIO RTC có thể được sử dụng để gọi đánh thức ngắt bên ngoài: 
 •	RTC_GPIO0 : GPIO36
-•	RTC_GPIO3: GPIO39
-•	RTC_GPIO9: GPIO32
-•	RTC_GPIO8: GPIO33
-•	RTC_GPIO6: GPIO25
-•	RTC_GPIO7: GPIO26
+•	RTC_GPIO3 : GPIO39
+•	RTC_GPIO9 : GPIO32
+•	RTC_GPIO8 : GPIO33
+•	RTC_GPIO6 : GPIO25
+•	RTC_GPIO7 : GPIO26
 •	RTC_GPIO17: GPIO27
 •	RTC_GPIO16: GPIO14
 •	RTC_GPIO15: GPIO12
@@ -122,14 +113,15 @@ Bên cạnh đó, các nguồn đánh thức bên ngoài cũng thường đượ
 Mô-đun RTC IO chứa các logic để kích hoạt đánh thức khi một trong các chân RTC GPIO được đặt thành một mức logic được xác định trước. RTC IO là một phần của miền nguồn điện ngoại vi RTC, vì vậy các thiết bị ngoại vi RTC sẽ được giữ nguồn trong khi ngủ sâu nếu nguồn đánh thức này được yêu cầu.
 Bởi vì mô-đun RTC IO được kích hoạt trong chế độ này, các điện trở kéo lên hoặc kéo xuống nội bộ cũng có thể được sử dụng. Chúng cần được cấu hình bởi ứng dụng sử dụng các hàm rtc_gpio_pullup_en() và rtc_gpio_pulldown_en() trước khi gọi esp_sleep_start().
 Trong các phiên bản 0 và 1 của ESP32, nguồn đánh thức này không tương thích với các nguồn đánh thức ULP và touch.
-Hàm esp_sleep_enable_ext0_wakeup()có thể được sử dụng để kích hoạt nguồn đánh thức này. Nguyên mẫu của hàm như sau:
+Hàm esp_sleep_enable_ext0_wakeup()có thể được sử dụng để kích hoạt nguồn đánh thức này. 
+Nguyên mẫu của hàm như sau:
 esp_err_t esp_sleep_enable_ext0_wakeup(gpio_num_t gpio_num, int level);
 Trong đó:
-gpio_num: là tên của chân GPIO ta chọn làm nguồn cho ext0
-level: là mức logic của chân GPIO ta chọn
-Sau khi đánh thức từ chế độ ngủ, chân RTC IO được dùng để đánh thức sẽ được cấu hình lại chân GPIO thông thường bằng cách sử dụng hàm rtc_gpio_deinit(gpio_num) .
+gpio_num: là tên của chân GPIO ta chọn làm nguồn cho ext0  
+level: là mức logic của chân GPIO ta chọn  
+Sau khi đánh thức từ chế độ ngủ, chân RTC IO được dùng để đánh thức sẽ được cấu hình lại chân GPIO thông thường bằng cách sử dụng hàm rtc_gpio_deinit(gpio_num).
 #### Ứng dụng ext0 trong Deep Sleep
-Đầu tiên chúng ta sử dụng một nút nhấn, kết nối nút nhấn này với một chân GPIO trên esp32 để làm một external interrupt. Khi nhấn nút, mức logic thay đổi, điều này sẽ kích hoạt đánh thức esp32 khỏi chế độ sleep. Để sử dụng được chân GPIO trong chế độ Deep Sleep, chúng ta cần sử dụng header file "driver/rtc_io.h". Header file này chứa các hàm chức năng cho phép ta sử dụng và cấu hình hoạt động của các chân GPIO trong chế độ Deep Sleep. Trong ví dụ này, nhóm em sẽ sử dụng chân GPIO 0. Vì ở trạng thái thông thường, các chân GPIO của Esp32 luôn ở trạng thái trở kháng cao (High-impedance) hoặc thả nổi (Floating) rất khó để xác định mức logic để đưa vào tham số trong hàm esp_sleep_enable_ext0_wakeup.  Vì thế, chân GPIO này sẽ được cấu hình pull-up để trạng thái của chân GPIO 0 luôn ở mức logic 1. Hàm esp_sleep_enable_ext0_wakeup được dùng để chọn external interrupt 0 làm nguồn đánh thức ESP32. Sau đó ESP32 được đưa vào chế độ Deep Sleep bằng hàm esp_deep_sleep_start(). Bảng 2-3 là chi tiết phần code tham khảo chương trình ứng dụng 
+Đầu tiên chúng ta sử dụng một nút nhấn, kết nối nút nhấn này với một chân GPIO trên esp32 để làm một external interrupt. Khi nhấn nút, mức logic thay đổi, điều này sẽ kích hoạt đánh thức esp32 khỏi chế độ sleep. Để sử dụng được chân GPIO trong chế độ Deep Sleep, chúng ta cần sử dụng header file "driver/rtc_io.h". Header file này chứa các hàm chức năng cho phép ta sử dụng và cấu hình hoạt động của các chân GPIO trong chế độ Deep Sleep. Trong ví dụ này, nhóm em sẽ sử dụng chân GPIO 0. Vì ở trạng thái thông thường, các chân GPIO của Esp32 luôn ở trạng thái trở kháng cao (High-impedance) hoặc thả nổi (Floating) rất khó để xác định mức logic để đưa vào tham số trong hàm esp_sleep_enable_ext0_wakeup.  Vì thế, chân GPIO này sẽ được cấu hình pull-up để trạng thái của chân GPIO 0 luôn ở mức logic 1. Hàm esp_sleep_enable_ext0_wakeup được dùng để chọn external interrupt 0 làm nguồn đánh thức ESP32. Sau đó ESP32 được đưa vào chế độ Deep Sleep bằng hàm esp_deep_sleep_start(). Bên dướilà chi tiết phần code tham khảo chương trình ứng dụng 
 ```
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
