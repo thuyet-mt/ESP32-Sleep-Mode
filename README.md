@@ -118,6 +118,7 @@ Một điểm quan trọng cần lưu ý, ta chỉ có thể sử dụng các ch
 - RTC_GPIO13: GPIO15<br>
 - RTC_GPIO12: GPIO2<br>
 - RTC_GPIO10: GPIO4<br>
+
 Mô-đun RTC IO chứa các logic để kích hoạt đánh thức khi một trong các chân RTC GPIO được đặt thành một mức logic được xác định trước.<br> 
 RTC IO là một phần của miền nguồn điện ngoại vi RTC, vì vậy các thiết bị ngoại vi RTC sẽ được giữ nguồn trong khi ngủ sâu nếu nguồn đánh thức này được yêu cầu.<br>
 Bởi vì mô-đun RTC IO được kích hoạt trong chế độ này, các điện trở kéo lên hoặc kéo xuống nội bộ cũng có thể được sử dụng. Chúng cần được cấu hình bởi ứng dụng sử dụng các hàm rtc_gpio_pullup_en() và rtc_gpio_pulldown_en() trước khi gọi esp_sleep_start().
