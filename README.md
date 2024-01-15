@@ -1,7 +1,7 @@
 # ESP32-Sleep-Mode
 Project này vẫn đang trong quá trình hoàn thiện và bổ sung
 ## Sleep mode là gì?
-Trên thực tế, tất cả các dòng vi điều khiển đều có chế độ ngủ (sleep mode) nhưng hiệu suất của mỗi dòng sẽ khác nhau. Ngày nay các thiết bị IOT dạng wearable rất phổ biến và cần sử dụng pin để đảm bảo tính linh hoạt.  Sleep Mode ra đời để giúp MCU tiết kiệm năng lượng bằng cách tắt các phần chưa cần thiết và đặt các sự kiện có thể đánh thức (Wake Up) MCU.
+Ngày nay các thiết bị IOT dạng wearable rất phổ biến và cần sử dụng pin để đảm bảo tính linh hoạt. Sleep Mode ra đời để giúp MCU tiết kiệm năng lượng bằng cách tắt các phần chưa cần thiết và đặt các sự kiện có thể đánh thức (Wake Up) MCU. Trên thực tế, tất cả các dòng vi điều khiển đều có chế độ ngủ (sleep mode) nhưng hiệu suất của mỗi dòng sẽ khác nhau.
 ## Các chế độ tiết kiệm năng lượng của ESP32 Sleep Mode
 Trong ESP32 có 5 chế độ năng lượng đó là:
 - Active mode
